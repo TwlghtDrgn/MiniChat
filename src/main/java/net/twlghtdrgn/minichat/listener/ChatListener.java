@@ -2,6 +2,7 @@ package net.twlghtdrgn.minichat.listener;
 
 import de.myzelyam.api.vanish.VanishAPI;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -16,9 +17,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatListener implements Listener {
+    @Getter
+    private static final List<Player> spies = new ArrayList<>();
+
     @EventHandler
     public void onAsyncChatEvent(AsyncChatEvent e) {
         if ((Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish"))
@@ -45,17 +50,20 @@ public class ChatListener implements Listener {
     }
 
     private static void sendToLocal(AsyncChatEvent e, StringBuilder sb) {
-        e.viewers().clear();
         double distance = Config.getLocalChatRange();
         List<Player> players = e.getPlayer().getWorld().getPlayers();
         Location c = e.getPlayer().getLocation();
         String msg = Config.getLocalChatIcon() + " " + sb;
-        for (Player p:players) {
-            if (p.getLocation().distanceSquared(c) <= distance * distance) {
-                e.viewers().add(p);
-            }
-        }
+
+        e.viewers().clear();
         e.viewers().add(Bukkit.getConsoleSender());
+        for (Player p:players) {
+            if (p.getLocation().distanceSquared(c) <= distance * distance) e.viewers().add(p);
+        }
+        for (Player p:spies) {
+            if (p.isOnline()) e.viewers().add(p);
+        }
+
         e.renderer(((source, sourceDisplayName, component, viewer) ->
             Format.parse(msg)));
     }

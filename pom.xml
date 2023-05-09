@@ -6,7 +6,7 @@
 
     <groupId>net.twlghtdrgn</groupId>
     <artifactId>MiniChat</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.52</version>
     <packaging>jar</packaging>
 
     <name>MiniChat</name>

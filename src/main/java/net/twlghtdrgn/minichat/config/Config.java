@@ -13,15 +13,17 @@ public class Config {
         ConfigBuilder builder = ConfigBuilder.newBuilder()
                 .name("config.yml")
                 .addRow("%luckperms_prefix% {playername} %luckperms_suffix% <gray>►►<reset>", "placeholder")
-                .addRow(false,"global-chat")
-                .addRow("!","global-chat-prefix")
-                .addRow("[G]","global-chat-icon")
-                .addRow("[L]","local-chat-icon")
-                .addRow(100,"local-chat-range")
                 .addRow(false,"cross-server")
-                .addRow(false,"disable-join-message")
-                .addRow(false,"disable-leave-message")
-                .addRow("Чат отключен, так как вы находитесь в режиме невидимки","vanish-send-prevent-message")
+                .addRow(false,"global-chat","enable")
+                .addRow("!","global-chat","prefix")
+                .addRow("[G]","global-chat","icon")
+                .addRow("[L]","local-chat","icon")
+                .addRow(100,"local-chat","range")
+                .addRow(false,"disable","join-message")
+                .addRow(false,"disable","leave-message")
+                .addRow("Чат отключен, так как вы находитесь в режиме невидимки","message","vanish-send-prevent")
+                .addRow("Просмотр локального чата включен","message","spy-enabled")
+                .addRow("Просмотр локального чата выключен","message","spy-disabled")
                 .build();
         cfg = ConfigLoader.load(builder);
     }
@@ -31,11 +33,11 @@ public class Config {
     }
 
     public static boolean isGlobalEnabled() {
-        return cfg.node("global-chat").getBoolean(false);
+        return cfg.node("global-chat","enabled").getBoolean(false);
     }
 
     public static String getGlobalChatPrefix() {
-        return cfg.node("global-chat-prefix").getString("!");
+        return cfg.node("global-chat","prefix").getString("!");
     }
 
     public static boolean isCrossServerEnabled() {
@@ -43,26 +45,34 @@ public class Config {
     }
 
     public static double getLocalChatRange() {
-        return cfg.node("local-chat-range").getDouble(100);
+        return cfg.node("local-chat","range").getDouble(100);
     }
 
     public static String getGlobalChatIcon() {
-        return cfg.node("global-chat-icon").getString("");
+        return cfg.node("global-chat","icon").getString("");
     }
 
     public static String getLocalChatIcon() {
-        return cfg.node("local-chat-icon").getString("");
+        return cfg.node("local-chat","icon").getString("");
     }
 
     public static boolean getJoinMessageDisabled() {
-        return cfg.node("disable-join-message").getBoolean(false);
+        return cfg.node("disable","join-message").getBoolean(false);
     }
 
     public static boolean getLeaveMessageDisabled() {
-        return cfg.node("disable-leave-message").getBoolean(false);
+        return cfg.node("disable","leave-message").getBoolean(false);
     }
 
     public static String getVanishChatDisabledMessage() {
-        return cfg.node("vanish-send-prevent-message").getString("<red>Chat is disabled when you are vanished");
+        return cfg.node("message","vanish-send-prevent").getString("<red>Chat is disabled when you are vanished");
+    }
+
+    public static String getSpyDisabledMessage() {
+        return cfg.node("message","spy-disabled").getString("<red>Spy mode is disabled");
+    }
+
+    public static String getSpyEnabledMessage() {
+        return cfg.node("message","spy-enabled").getString("<green>Spy mode is enabled");
     }
 }
