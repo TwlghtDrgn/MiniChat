@@ -6,7 +6,7 @@
 
     <groupId>net.twlghtdrgn</groupId>
     <artifactId>MiniChat</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.55</version>
     <packaging>jar</packaging>
 
     <name>MiniChat</name>
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>net.twlghtdrgn</groupId>
             <artifactId>TwilightLib</artifactId>
-            <version>0.0.152-SNAPSHOT</version>
+            <version>0.0.153-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
