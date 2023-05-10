@@ -1,5 +1,5 @@
 # MiniChat
-A simple chat plugin for chat formatting
+A simple chat-formatting plugin for Paper 1.19+
 
 Features:
 
@@ -14,6 +14,36 @@ Features:
 
 Requirements:
 
-- TwilightLib
-- PlaceholderAPI
-- SuperVanish/PremiumVanish (optionally)
+- Paper 1.19+ or any Paper fork
+- [TwilightLib](https://github.com/TwlghtDrgn/TwilightLib)
+- [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI/)
+- SuperVanish / PremiumVanish (optional)
+
+Permissions
+<table>
+  <tr>
+    <td>Permission</td>
+    <td>Command</td>
+    <td>Description</td>
+  </tr>
+  <tr>
+    <td>minichat.command</td>
+    <td>/minichat</td>
+    <td>Required permission to use any plugin command</td>
+  </tr>
+  <tr>
+    <td>minichat.command.reload</td>
+    <td>/minichat reload</td>
+    <td>Reloads config</td>
+  </tr>
+  <tr>
+    <td>minichat.command.spy</td>
+    <td>/minichat spy</td>
+    <td>Allows to see local messages if global chat function is enabled</td>
+  </tr>
+  <tr>
+    <td>minichat.colors</td>
+    <td>  </td>
+    <td>Allows player to use color codes in chat</td>
+  </tr>
+</table>

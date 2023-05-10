@@ -2,10 +2,10 @@ package net.twlghtdrgn.minichat.listener;
 
 import de.myzelyam.api.vanish.VanishAPI;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.twlghtdrgn.minichat.ProxyMessaging;
 import net.twlghtdrgn.minichat.config.Config;
 import net.twlghtdrgn.twilightlib.util.Format;
@@ -33,48 +33,55 @@ public class ChatListener implements Listener {
             return;
         }
 
-        String message = convertToString(e.message()).trim();
-        StringBuilder sb = new StringBuilder()
-                .append(PlaceholderAPI.setPlaceholders(e.getPlayer(), Config.getPlaceholder()
-                                .replace("{playername}",e.getPlayer().getName()))
-                        .replaceAll("([§&])[0-9A-Fa-f]",""))
-                .append(" ")
-                .append(message.replaceFirst("!","").replaceAll("([§&])[0-9A-Fa-f]",""));
+        String format = PlaceholderAPI.setPlaceholders(e.getPlayer(), Config.getPlaceholder()
+                .replace("{playername}",e.getPlayer().getName()));
+        String rawMessage = Format.parse(e.message()).trim();
+
+        Message msg = checkPermission(e.getPlayer(),rawMessage);
+
+        e.message(msg.getComponent());
+
+        if (Format.parse(e.message()).length() < 1) {
+            e.setCancelled(true);
+            return;
+        }
 
         if (!Config.isGlobalEnabled() || (Config.isGlobalEnabled()
-                && message.startsWith(Config.getGlobalChatPrefix()))) {
-            sendToGlobal(e, sb);
+                && rawMessage.startsWith(Config.getGlobalChatPrefix()))) {
+            sendToGlobal(e, format, msg.getRaw());
         } else {
-            sendToLocal(e, sb);
+            sendToLocal(e, format);
         }
     }
 
-    private static void sendToLocal(AsyncChatEvent e, StringBuilder sb) {
+    private static void sendToLocal(AsyncChatEvent e, String format) {
         double distance = Config.getLocalChatRange();
         List<Player> players = e.getPlayer().getWorld().getPlayers();
         Location c = e.getPlayer().getLocation();
-        String msg = Config.getLocalChatIcon() + " " + sb;
+        String render = Config.getLocalChatIcon() + " " + format;
 
         e.viewers().clear();
         e.viewers().add(Bukkit.getConsoleSender());
-        for (Player p:players) {
-            if (p.getLocation().distanceSquared(c) <= distance * distance) e.viewers().add(p);
-        }
-        for (Player p:spies) {
-            if (p.isOnline()) e.viewers().add(p);
-        }
+        for (Player p:players)
+            if (p.getLocation().distanceSquared(c) <= distance * distance)
+                e.viewers().add(p);
+        for (Player p:spies)
+            if (p.isOnline())
+                e.viewers().add(p);
 
         e.renderer(((source, sourceDisplayName, component, viewer) ->
-            Format.parse(msg)));
+            Format.parse(render).appendSpace().append(component)));
     }
 
-    private static void sendToGlobal(AsyncChatEvent e, StringBuilder sb) {
-        String msg;
-        if (!Config.isGlobalEnabled()) msg = sb.toString();
-        else msg = Config.getGlobalChatIcon() + " " + sb;
-        if (Config.isCrossServerEnabled()) ProxyMessaging.sendMessage(e.getPlayer(), msg);
+    private static void sendToGlobal(AsyncChatEvent e, String format, String message) {
+        String render;
+        if (!Config.isGlobalEnabled()) render = format;
+        else render = Config.getGlobalChatIcon() + " " + format;
+        if (Config.isCrossServerEnabled())
+            ProxyMessaging.sendMessage(e.getPlayer(), render + " " + message);
+
         e.renderer(((source, sourceDisplayName, component, viewer) ->
-                Format.parse(msg)));
+                Format.parse(render).appendSpace().append(component)));
     }
 
     @EventHandler
@@ -87,7 +94,25 @@ public class ChatListener implements Listener {
         if (Config.getLeaveMessageDisabled()) e.quitMessage(null);
     }
 
-    private String convertToString(Component c) {
-        return MiniMessage.miniMessage().serialize(c);
+    private Message checkPermission(Player p, String s) {
+        Message m;
+
+        String raw = s.replaceFirst("!", "")
+                .replaceAll("[&§][0-9A-Fa-fK-Ok-oRr]","");
+        if (p.hasPermission("minichat.colors")) {
+            m = new Message(Format.parse(raw),raw);
+        } else {
+            m = new Message(Component.text(raw), raw
+                    .replaceAll("<[A-Za-z]*>",""));
+        }
+
+        return m;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private static class Message {
+        private Component component;
+        private String raw;
     }
 }

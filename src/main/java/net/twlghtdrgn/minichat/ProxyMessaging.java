@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class ProxyMessaging implements PluginMessageListener {
     public static final String PROXY_CHANNEL = "BungeeCord";
 
-    public static void sendMessage(@NotNull Player p,String message) {
+    public static void sendMessage(@NotNull Player p, String message) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Forward");
         out.writeUTF("ALL");
@@ -28,7 +28,6 @@ public class ProxyMessaging implements PluginMessageListener {
         if (!channel.equals(PROXY_CHANNEL)) return;
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         if (!in.readUTF().equals("MiniChat")) return;
-
         String msg = in.readUTF();
         Bukkit.broadcast(Format.parse(msg));
     }
