@@ -4,7 +4,7 @@ import lombok.Getter;
 import net.twlghtdrgn.minichat.command.MiniChatCommand;
 import net.twlghtdrgn.minichat.config.Config;
 import net.twlghtdrgn.minichat.listener.ChatListener;
-import net.twlghtdrgn.twilightlib.TwilightLib;
+import net.twlghtdrgn.twilightlib.TwilightLibImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -15,8 +15,8 @@ public final class MiniChat extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
-        TwilightLib.setPlugin(this);
         plugin = this;
+        new TwilightLibImpl(this);
         try {
             getLogger().info(String.format("""
                     
