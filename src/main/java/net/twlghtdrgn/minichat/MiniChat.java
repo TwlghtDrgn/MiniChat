@@ -4,31 +4,20 @@ import lombok.Getter;
 import net.twlghtdrgn.minichat.command.MiniChatCommand;
 import net.twlghtdrgn.minichat.config.Config;
 import net.twlghtdrgn.minichat.listener.ChatListener;
-import net.twlghtdrgn.twilightlib.TwilightLibImpl;
+import net.twlghtdrgn.twilightlib.TwilightPlugin;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public final class MiniChat extends JavaPlugin {
+public final class MiniChat extends TwilightPlugin {
     @Getter
     private static MiniChat plugin;
 
     @Override
-    public void onEnable() {
-        // Plugin startup logic
-        plugin = this;
-        new TwilightLibImpl(this);
+    protected void enable() {
         try {
-            getLogger().info(String.format("""
-                    
-                    || MiniChat v%s
-                    ||
-                    || Server version: %s
-                    || GitHub: https://github.com/TwlghtDrgn/MiniChat""",
-                    getPluginMeta().getVersion(),
-                    getServer().getVersion()));
+            plugin = this;
             Config.load();
-            getServer().getMessenger().registerOutgoingPluginChannel(plugin, ProxyMessaging.PROXY_CHANNEL);
-            getServer().getMessenger().registerIncomingPluginChannel(plugin, ProxyMessaging.PROXY_CHANNEL, new ProxyMessaging());
+            getServer().getMessenger().registerOutgoingPluginChannel(this, ProxyMessaging.PROXY_CHANNEL);
+            getServer().getMessenger().registerIncomingPluginChannel(this, ProxyMessaging.PROXY_CHANNEL, new ProxyMessaging());
             Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
             Bukkit.getCommandMap().register("minichat", new MiniChatCommand());
         } catch (Exception e) {
@@ -39,9 +28,8 @@ public final class MiniChat extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-        getServer().getMessenger().unregisterOutgoingPluginChannel(plugin, ProxyMessaging.PROXY_CHANNEL);
-        getServer().getMessenger().unregisterIncomingPluginChannel(plugin, ProxyMessaging.PROXY_CHANNEL);
+    protected void disable() {
+        getServer().getMessenger().unregisterOutgoingPluginChannel(this, ProxyMessaging.PROXY_CHANNEL);
+        getServer().getMessenger().unregisterIncomingPluginChannel(this, ProxyMessaging.PROXY_CHANNEL);
     }
 }

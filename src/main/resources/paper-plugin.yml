@@ -2,6 +2,7 @@ name: MiniChat
 version: '${project.version}'
 main: net.twlghtdrgn.minichat.MiniChat
 api-version: 1.19
+website: https://github.com/TwlghtDrgn/MiniChat
 prefix: MC
 load-after:
   - name: TwiilightLib

@@ -1,7 +1,7 @@
 package net.twlghtdrgn.minichat.config;
 
+import net.twlghtdrgn.minichat.MiniChat;
 import net.twlghtdrgn.twilightlib.config.ConfigBuilder;
-import net.twlghtdrgn.twilightlib.config.ConfigLoader;
 import org.spongepowered.configurate.ConfigurationNode;
 
 import java.io.IOException;
@@ -14,10 +14,10 @@ public class Config {
                 .name("config.yml")
                 .addRow("%luckperms_prefix% {playername} %luckperms_suffix% <gray>►►<reset>", "placeholder")
                 .addRow(false,"cross-server")
-                .addRow(false,"global-chat","enable")
+                .addRow(false,"global-chat","enabled")
                 .addRow("!","global-chat","prefix")
-                .addRow("[G]","global-chat","icon")
-                .addRow("[L]","local-chat","icon")
+                .addRow("[G] ","global-chat","icon")
+                .addRow("[L] ","local-chat","icon")
                 .addRow(100,"local-chat","range")
                 .addRow(false,"disable","join-message")
                 .addRow(false,"disable","leave-message")
@@ -25,7 +25,7 @@ public class Config {
                 .addRow("Просмотр локального чата включен","message","spy-enabled")
                 .addRow("Просмотр локального чата выключен","message","spy-disabled")
                 .build();
-        cfg = ConfigLoader.load(builder);
+        cfg = MiniChat.getPlugin().getConfiguration().load(builder);
     }
 
     public static String getPlaceholder() {
