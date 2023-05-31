@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,11 +55,11 @@ public class ChatListener implements Listener {
         }
     }
 
-    private static void sendToLocal(AsyncChatEvent e, String format) {
+    private static void sendToLocal(@NotNull AsyncChatEvent e, String format) {
         double distance = Config.getLocalChatRange();
         List<Player> players = e.getPlayer().getWorld().getPlayers();
         Location c = e.getPlayer().getLocation();
-        String render = Config.getLocalChatIcon() + " " + format;
+        String render = Config.getLocalChatIcon() + format;
 
         e.viewers().clear();
         e.viewers().add(Bukkit.getConsoleSender());
@@ -76,7 +77,7 @@ public class ChatListener implements Listener {
     private static void sendToGlobal(AsyncChatEvent e, String format, String message) {
         String render;
         if (!Config.isGlobalEnabled()) render = format;
-        else render = Config.getGlobalChatIcon() + " " + format;
+        else render = Config.getGlobalChatIcon() + format;
         if (Config.isCrossServerEnabled())
             ProxyMessaging.sendMessage(e.getPlayer(), render + " " + message);
 
@@ -94,7 +95,7 @@ public class ChatListener implements Listener {
         if (Config.getLeaveMessageDisabled()) e.quitMessage(null);
     }
 
-    private Message checkPermission(Player p, String s) {
+    private @NotNull Message checkPermission(@NotNull Player p, @NotNull String s) {
         Message m;
 
         String raw = s.replaceFirst("!", "")
