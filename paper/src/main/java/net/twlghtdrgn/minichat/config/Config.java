@@ -1,6 +1,6 @@
 package net.twlghtdrgn.minichat.config;
 
-import net.twlghtdrgn.minichat.MiniChat;
+import net.twlghtdrgn.minichat.MiniChatPaper;
 import net.twlghtdrgn.twilightlib.config.ConfigBuilder;
 import org.spongepowered.configurate.ConfigurationNode;
 
@@ -25,7 +25,7 @@ public class Config {
                 .addRow("Просмотр локального чата включен","message","spy-enabled")
                 .addRow("Просмотр локального чата выключен","message","spy-disabled")
                 .build();
-        cfg = MiniChat.getPlugin().getConfiguration().load(builder);
+        cfg = MiniChatPaper.getPlugin().getConfiguration().load(builder);
     }
 
     public static String getPlaceholder() {

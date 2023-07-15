@@ -1,6 +1,6 @@
 package net.twlghtdrgn.minichat.command;
 
-import net.twlghtdrgn.minichat.MiniChat;
+import net.twlghtdrgn.minichat.MiniChatPaper;
 import net.twlghtdrgn.minichat.config.Config;
 import net.twlghtdrgn.minichat.listener.ChatListener;
 import net.twlghtdrgn.twilightlib.util.Format;
@@ -20,7 +20,7 @@ public class MiniChatCommand extends Command {
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
         if (!sender.hasPermission("minichat.command")) return false;
         if (args.length < 1) {
-            sender.sendMessage(Format.parse(String.format("Running MiniChat v%s", MiniChat.getPlugin().getPluginMeta().getVersion())));
+            sender.sendMessage(Format.parse(String.format("Running MiniChat v%s", MiniChatPaper.getPlugin().getPluginMeta().getVersion())));
             return false;
         }
         if (args[0].equals("reload") && sender.hasPermission("minichat.command.reload")) {

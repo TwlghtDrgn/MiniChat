@@ -19,7 +19,7 @@ public class ProxyMessaging implements PluginMessageListener {
         out.writeUTF("ALL");
         out.writeUTF("MiniChat");
         out.writeUTF(message);
-        p.sendPluginMessage(MiniChat.getPlugin(), PROXY_CHANNEL, out.toByteArray());
+        p.sendPluginMessage(MiniChatPaper.getPlugin(), PROXY_CHANNEL, out.toByteArray());
     }
 
     @Override
