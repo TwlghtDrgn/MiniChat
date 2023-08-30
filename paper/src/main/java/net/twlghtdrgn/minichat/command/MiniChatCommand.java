@@ -1,15 +1,18 @@
 package net.twlghtdrgn.minichat.command;
 
-import net.twlghtdrgn.minichat.MiniChatPaper;
-import net.twlghtdrgn.minichat.config.Config;
-import net.twlghtdrgn.minichat.listener.ChatListener;
-import net.twlghtdrgn.twilightlib.util.Format;
+import net.twlghtdrgn.minichat.MiniChat;
+import net.twlghtdrgn.minichat.PlayerCache;
+import net.twlghtdrgn.minichat.config.Configuration;
+import net.twlghtdrgn.minichat.listener.PlayerJoinLeaveListener;
+import net.twlghtdrgn.minichat.messaging.ProxySyncMessaging;
+import net.twlghtdrgn.twilightlib.api.util.Format;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MiniChatCommand extends Command {
     public MiniChatCommand() {
@@ -20,30 +23,40 @@ public class MiniChatCommand extends Command {
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
         if (!sender.hasPermission("minichat.command")) return false;
         if (args.length < 1) {
-            sender.sendMessage(Format.parse(String.format("Running MiniChat v%s", MiniChatPaper.getPlugin().getPluginMeta().getVersion())));
+            sender.sendMessage(Format.parse(String.format("Running MiniChat v%s", MiniChat.getPlugin().getPluginInfo().getPluginVersion())));
             return false;
         }
         if (args[0].equals("reload") && sender.hasPermission("minichat.command.reload")) {
-            try {
-                Config.load();
+            if (MiniChat.getPlugin().getConfigLoader().reload()) {
                 sender.sendMessage(Format.parse("<green>Config reloaded"));
+                if (sender instanceof Player p) {
+                    ProxySyncMessaging.sendMessage(p, ProxySyncMessaging.Values.SETTINGS);
+                } else PlayerJoinLeaveListener.setResendMessage();
                 return true;
-            } catch (Exception e) {
+            } else {
                 sender.sendMessage(Format.parse("<red>There's an error. Check console for information"));
-                e.printStackTrace();
                 return false;
             }
         } else if (args[0].equals("spy") && sender.hasPermission("minichat.command.spy")) {
             if (sender instanceof Player p) {
-                if (!ChatListener.getSpies().contains(p)) {
-                    ChatListener.getSpies().add(p);
-                    p.sendMessage(Format.parse(Config.getSpyEnabledMessage()));
+                if (PlayerCache.setLocalSpy(p.getUniqueId())) {
+                    sender.sendMessage(Format.parse(Configuration.getConfig().getMessages().getSpyEnabled()));
                 } else {
-                    ChatListener.getSpies().remove(p);
-                    p.sendMessage(Format.parse(Config.getSpyDisabledMessage()));
+                    sender.sendMessage(Format.parse(Configuration.getConfig().getMessages().getSpyDisabled()));
                 }
+                ProxySyncMessaging.sendMessage(p, ProxySyncMessaging.Values.SPY);
             } else sender.sendMessage(Format.parse("Uh-oh! Console always spies, ya know?"));
         }
         return false;
+    }
+
+    @Override
+    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String @NotNull [] args) throws IllegalArgumentException {
+        List<String> subcommands = new ArrayList<>();
+        if (sender.hasPermission("minichat.command.reload")) subcommands.add("reload");
+        if (sender.hasPermission("minichat.command.spy")) subcommands.add("spy");
+        if (args.length == 1)
+            subcommands = subcommands.stream().filter(s -> s.startsWith(args[0])).toList();
+        return subcommands;
     }
 }

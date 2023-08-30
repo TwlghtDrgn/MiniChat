@@ -6,113 +6,111 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
-import net.twlghtdrgn.minichat.ProxyMessaging;
-import net.twlghtdrgn.minichat.config.Config;
-import net.twlghtdrgn.twilightlib.util.Format;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
+import net.twlghtdrgn.minichat.PlayerCache;
+import net.twlghtdrgn.minichat.config.Configuration;
+import net.twlghtdrgn.minichat.event.GlobalChatEvent;
+import net.twlghtdrgn.minichat.event.LocalChatEvent;
+import net.twlghtdrgn.minichat.messaging.CrossServerMessaging;
+import net.twlghtdrgn.twilightlib.api.util.Format;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ChatListener implements Listener {
-    @Getter
-    private static final List<Player> spies = new ArrayList<>();
+    private final MiniMessage chatFormatter = MiniMessage.builder()
+            .tags(TagResolver.builder()
+                    .resolver(StandardTags.clickEvent())
+                    .resolver(StandardTags.color())
+                    .build()
+            ).build();
 
     @EventHandler
     public void onAsyncChatEvent(AsyncChatEvent e) {
-        if ((Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish"))
+        if ((Bukkit.getPluginManager().isPluginEnabled("SuperVanish")
+            || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish"))
                 && VanishAPI.isInvisible(e.getPlayer())) {
-            e.getPlayer().sendMessage(Format.parse(Config.getVanishChatDisabledMessage()));
+            e.getPlayer().sendMessage(Format.parse(Configuration.getConfig().getMessages().getVanishChatMessagePrevent()));
             e.setCancelled(true);
             return;
         }
 
-        String format = PlaceholderAPI.setPlaceholders(e.getPlayer(), Config.getPlaceholder()
-                .replace("{playername}",e.getPlayer().getName()));
-        String rawMessage = Format.parse(e.message()).trim();
-
-        Message msg = checkPermission(e.getPlayer(),rawMessage);
-
+        Component placeholder = Format.parse(
+                PlaceholderAPI.setPlaceholders(e.getPlayer(),
+                        Configuration.getConfig().getPlaceholder()
+                                .replace("{playername}", e.getPlayer().getName())));
+        Message msg = hasColorPermission(e.getPlayer(), Format.parse(e.message()).trim());
         e.message(msg.getComponent());
 
-        if (Format.parse(e.message()).length() < 1) {
+        if (msg.getRaw().length() < 1) {
             e.setCancelled(true);
             return;
         }
 
-        if (!Config.isGlobalEnabled() || (Config.isGlobalEnabled()
-                && rawMessage.startsWith(Config.getGlobalChatPrefix()))) {
-            sendToGlobal(e, format, msg.getRaw());
+        if (!Configuration.getConfig().getGlobalChat().isEnabled() ||
+                msg.getRaw().startsWith(Configuration.getConfig().getGlobalChat().getPrefix())) {
+            sendToGlobal(e, placeholder, msg.getRaw());
         } else {
-            sendToLocal(e, format);
+            sendToLocal(e, placeholder);
         }
     }
 
-    private static void sendToLocal(@NotNull AsyncChatEvent e, String format) {
-        double distance = Config.getLocalChatRange();
-        List<Player> players = e.getPlayer().getWorld().getPlayers();
-        Location c = e.getPlayer().getLocation();
-        String render = Config.getLocalChatIcon() + format;
+    private void sendToLocal(@NotNull AsyncChatEvent e, Component format) {
+        LocalChatEvent event = new LocalChatEvent(e.getPlayer(), format, e.message());
+        if (event.callEvent()) {
+            double distance = Configuration.getConfig().getLocalChat().getRange();
+            List<Player> players = e.getPlayer().getWorld().getPlayers();
+            Location c = e.getPlayer().getLocation();
+            Component render = Format.parse(Configuration.getConfig().getLocalChat().getIcon()).append(event.getFormat());
 
-        e.viewers().clear();
-        e.viewers().add(Bukkit.getConsoleSender());
-        for (Player p:players)
-            if (p.getLocation().distanceSquared(c) <= distance * distance)
+            e.viewers().clear();
+            e.viewers().add(Bukkit.getConsoleSender());
+            for (Player p:players)
+                if (p.getLocation().distanceSquared(c) <= distance * distance)
+                    e.viewers().add(p);
+            for (Player p:PlayerCache.getLocalSpies())
                 e.viewers().add(p);
-        for (Player p:spies)
-            if (p.isOnline())
-                e.viewers().add(p);
 
-        e.renderer(((source, sourceDisplayName, component, viewer) ->
-            Format.parse(render).appendSpace().append(component)));
+            e.renderer(((source, sourceDisplayName, component, viewer) ->
+                    render.appendSpace().append(event.getMessage())));
+        } else e.setCancelled(true);
     }
 
-    private static void sendToGlobal(AsyncChatEvent e, String format, String message) {
-        String render;
-        if (!Config.isGlobalEnabled()) render = format;
-        else render = Config.getGlobalChatIcon() + format;
-        if (Config.isCrossServerEnabled())
-            ProxyMessaging.sendMessage(e.getPlayer(), render + " " + message);
+    private void sendToGlobal(@NotNull AsyncChatEvent e, Component format, String message) {
+        GlobalChatEvent event = new GlobalChatEvent(e.getPlayer(), format, e.message());
+        if (event.callEvent()) {
+            Component render;
+            if (!Configuration.getConfig().getGlobalChat().isEnabled()) render = event.getFormat();
+            else render = Format.parse(Configuration.getConfig().getGlobalChat().getIcon()).append(event.getFormat());
 
-        e.renderer(((source, sourceDisplayName, component, viewer) ->
-                Format.parse(render).appendSpace().append(component)));
+            if (Configuration.getConfig().getCrossServer().isCrossServerEnabled())
+                CrossServerMessaging.sendMessage(e.getPlayer(), Format.parse(render) + " " + message.replaceFirst("!", ""));
+
+            e.renderer(((source, sourceDisplayName, component, viewer) ->
+                    render.appendSpace().append(event.getMessage())));
+        } else e.setCancelled(true);
     }
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        if (Config.getJoinMessageDisabled()) e.joinMessage(null);
-    }
+    private @NotNull Message hasColorPermission(@NotNull final Player player, @NotNull final String originalMessage) {
+        String modifiedMessage;
+        if  (originalMessage.contains("§") || originalMessage.contains("&")) modifiedMessage = Format.fromLegacy(originalMessage);
+        else modifiedMessage = originalMessage;
 
-    @EventHandler
-    public void onPlayerLeave(PlayerQuitEvent e) {
-        if (Config.getLeaveMessageDisabled()) e.quitMessage(null);
-    }
-
-    private @NotNull Message checkPermission(@NotNull Player p, @NotNull String s) {
-        Message m;
-
-        String raw = s.replaceFirst("!", "")
-                .replaceAll("[&§][0-9A-Fa-fK-Ok-oRr]","");
-        if (p.hasPermission("minichat.colors")) {
-            m = new Message(Format.parse(raw),raw);
-        } else {
-            m = new Message(Component.text(raw), raw
-                    .replaceAll("<[A-Za-z]*>",""));
-        }
-
-        return m;
+        if (player.hasPermission("minichat.colors"))
+            return new Message(chatFormatter.deserialize(modifiedMessage.replaceFirst("!","")), modifiedMessage);
+        else return new Message(Component.text(modifiedMessage.replaceFirst("!","")), modifiedMessage.replaceAll("<.[A-Za-z0-9:]*>",""));
     }
 
     @Getter
     @AllArgsConstructor
-    private static class Message {
+    protected class Message {
         private Component component;
         private String raw;
     }

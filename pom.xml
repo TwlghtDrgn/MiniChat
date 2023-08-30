@@ -6,7 +6,7 @@
 
     <groupId>net.twlghtdrgn</groupId>
     <artifactId>MiniChat</artifactId>
-    <version>0.2</version>
+    <version>0.3.6</version>
     <packaging>pom</packaging>
 
     <name>MiniChat</name>
@@ -36,4 +36,15 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>twlghtdrgn-releases</id>
+            <url>https://maven.twlghtdrgn.net/repository/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>twlghtdrgn-snapshots</id>
+            <url>https://maven.twlghtdrgn.net/repository/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
