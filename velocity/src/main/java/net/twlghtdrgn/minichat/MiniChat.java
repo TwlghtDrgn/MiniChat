@@ -1,6 +1,7 @@
 package net.twlghtdrgn.minichat;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
@@ -87,49 +88,28 @@ public class MiniChat implements ILibrary {
     }
 
     private void loadCommands() {
-        CommandManager manager = server.getCommandManager();
+        loadCommand("minichat-velocity", new MiniChatCommand());
+        loadCommand("message", Configuration.getConfig().getAliases().getMessageAliases(), new MessageCommand());
+        loadCommand("reply", ArrayUtils.addAll(new String[]{"chat"}, Configuration.getConfig().getAliases().getReplyAliases()), new ReplyCommand());
+        loadCommand("staffchat", Configuration.getConfig().getAliases().getStaffChatAliases(), new StaffChatCommand());
+        loadCommand("alert", new String[]{"broadcast", "bc"}, new AlertCommand());
+        loadCommand("block", new String[]{"unblock"}, new BlockCommand());
+    }
 
-        CommandMeta minichatCommandMeta = manager.metaBuilder("minichat-velocity")
+    private void loadCommand(String commandName, Command command) {
+        final CommandManager manager = server.getCommandManager();
+        CommandMeta meta = manager.metaBuilder(commandName)
                 .plugin(this)
                 .build();
+        manager.register(meta, command);
+    }
 
-        manager.register(minichatCommandMeta, new MiniChatCommand());
-
-        CommandMeta messageCommandMeta = manager.metaBuilder("message")
-                .aliases(Configuration.getConfig().getAliases().getMessageAliases())
+    private void loadCommand(String commandName, String[] aliases, Command command) {
+        final CommandManager manager = server.getCommandManager();
+        CommandMeta meta = manager.metaBuilder(commandName)
+                .aliases(aliases)
                 .plugin(this)
                 .build();
-
-        manager.register(messageCommandMeta, new MessageCommand());
-
-        String[] internalPrefixes = {"chat"};
-
-        CommandMeta replyCommandMeta = manager.metaBuilder("reply")
-                .aliases(ArrayUtils.addAll(internalPrefixes, Configuration.getConfig().getAliases().getReplyAliases()))
-                .plugin(this)
-                .build();
-
-        manager.register(replyCommandMeta, new ReplyCommand());
-
-        CommandMeta staffCommandMeta = manager.metaBuilder("staffchat")
-                .aliases(Configuration.getConfig().getAliases().getStaffChatAliases())
-                .plugin(this)
-                .build();
-
-        manager.register(staffCommandMeta, new StaffChatCommand());
-
-        CommandMeta alertCommandMeta = manager.metaBuilder("alert")
-                .aliases("broadcast")
-                .plugin(this)
-                .build();
-
-        manager.register(alertCommandMeta, new AlertCommand());
-
-        CommandMeta blockCommandMeta = manager.metaBuilder("block")
-                .aliases("unblock")
-                .plugin(this)
-                .build();
-
-        manager.register(blockCommandMeta, new BlockCommand());
+        manager.register(meta, command);
     }
 }

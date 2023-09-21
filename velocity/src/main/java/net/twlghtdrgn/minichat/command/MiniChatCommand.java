@@ -48,7 +48,7 @@ public class MiniChatCommand implements SimpleCommand {
                     } else {
                         p.sendMessage(Component.text("Networkspy disabled"));
                     }
-                    ProxyMessaging.sendMessage(p);
+                    ProxyMessaging.sendMessage(p, ProxyMessaging.SyncID.SPY);
                 } else source.sendMessage(Component.text("Enable network message logging in plugin settings"));
             }
             case "reload" -> {

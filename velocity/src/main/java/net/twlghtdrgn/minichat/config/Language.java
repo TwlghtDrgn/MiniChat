@@ -38,6 +38,7 @@ public class Language extends AbstractConfig {
         public static class DirectMessage {
             private String senderFormat = "You <gold>→ <white>%recipients% <gray>►►<reset> %message%";
             private String receiverFormat = "%sender% <gold>→ <white>%recipients% <gray>►►<reset> %message%";
+            private String singleReceiverFormat = "You";
 
             private String recipientLimit = "<red>You have tried to send message to %current% players. Maximum players is %max%";
 

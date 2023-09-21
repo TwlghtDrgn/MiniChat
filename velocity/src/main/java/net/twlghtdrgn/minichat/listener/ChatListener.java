@@ -38,16 +38,9 @@ public class ChatListener {
                 return;
             }
 
-            new PrivateMessage(player,
-                    lastRecipients.get(),
-                    message).send();
+            new PrivateMessage(player, lastRecipients.get(), message).send();
             return;
         }
-
-//        if (Configuration.getConfig().getEmojis().isEmojiReplacerEnabled())
-//            message = EmojiUtil.replaceEmojis(message);
-//
-//        e.setResult(PlayerChatEvent.ChatResult.message(message));
 
         Optional<ServerConnection> serverConnection = player.getCurrentServer();
         serverConnection.ifPresent(connection -> new SpyMessage(true,
