@@ -75,8 +75,9 @@ public class ChatListener implements Listener {
             for (Player p:players)
                 if (p.getLocation().distanceSquared(c) <= distance * distance)
                     e.viewers().add(p);
-            for (Player p:PlayerCache.getLocalSpies())
-                e.viewers().add(p);
+            PlayerCache.getLocalSpies().stream()
+                    .filter(player -> !e.viewers().contains(player))
+                    .forEach(player -> e.viewers().add(player));
 
             e.renderer(((source, sourceDisplayName, component, viewer) ->
                     render.appendSpace().append(event.getMessage())));

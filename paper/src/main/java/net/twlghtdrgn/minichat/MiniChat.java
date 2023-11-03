@@ -6,9 +6,9 @@ import net.twlghtdrgn.minichat.config.Configuration;
 import net.twlghtdrgn.minichat.listener.ChatListener;
 import net.twlghtdrgn.minichat.listener.PlayerJoinLeaveListener;
 import net.twlghtdrgn.minichat.messaging.CrossServerMessaging;
+import net.twlghtdrgn.minichat.messaging.MessageChannel;
 import net.twlghtdrgn.minichat.messaging.ProxySyncMessaging;
 import net.twlghtdrgn.twilightlib.TwilightPlugin;
-import net.twlghtdrgn.twilightlib.exception.PluginLoadException;
 import org.bukkit.Bukkit;
 
 public final class MiniChat extends TwilightPlugin {
@@ -16,18 +16,18 @@ public final class MiniChat extends TwilightPlugin {
     private static MiniChat plugin;
 
     @Override
-    protected void enable() throws PluginLoadException {
+    protected void enable() throws Exception {
         plugin = this;
         getConfigLoader().addConfig(new Configuration("config.yml"));
 
-        if (!getConfigLoader().reload()) throw new PluginLoadException("Config cannot be loaded");
+        if (!getConfigLoader().reload()) throw new IllegalStateException("Config cannot be loaded");
 
-        getServer().getMessenger().registerIncomingPluginChannel(this, CrossServerMessaging.PROXY_CHANNEL,
+        getServer().getMessenger().registerIncomingPluginChannel(this, MessageChannel.SERVER,
                 new CrossServerMessaging());
-        getServer().getMessenger().registerIncomingPluginChannel(this, ProxySyncMessaging.PROXY_SYNC_CHANNEL,
+        getServer().getMessenger().registerIncomingPluginChannel(this, MessageChannel.PROXY,
                 new ProxySyncMessaging());
-        getServer().getMessenger().registerOutgoingPluginChannel(this, CrossServerMessaging.PROXY_CHANNEL);
-        getServer().getMessenger().registerOutgoingPluginChannel(this, ProxySyncMessaging.PROXY_SYNC_CHANNEL);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, MessageChannel.SERVER);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, MessageChannel.PROXY);
 
         Bukkit.getPluginManager().registerEvents(new PlayerJoinLeaveListener(), this);
         Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
@@ -36,9 +36,14 @@ public final class MiniChat extends TwilightPlugin {
 
     @Override
     protected void disable() {
-        getServer().getMessenger().unregisterOutgoingPluginChannel(this, CrossServerMessaging.PROXY_CHANNEL);
-        getServer().getMessenger().unregisterOutgoingPluginChannel(this, ProxySyncMessaging.PROXY_SYNC_CHANNEL);
-        getServer().getMessenger().unregisterIncomingPluginChannel(this, CrossServerMessaging.PROXY_CHANNEL);
-        getServer().getMessenger().unregisterIncomingPluginChannel(this, ProxySyncMessaging.PROXY_SYNC_CHANNEL);
+        getServer().getMessenger().unregisterOutgoingPluginChannel(this, MessageChannel.SERVER);
+        getServer().getMessenger().unregisterOutgoingPluginChannel(this, MessageChannel.PROXY);
+        getServer().getMessenger().unregisterIncomingPluginChannel(this, MessageChannel.SERVER);
+        getServer().getMessenger().unregisterIncomingPluginChannel(this, MessageChannel.PROXY);
+    }
+
+    @Override
+    public boolean reload() {
+        return false;
     }
 }

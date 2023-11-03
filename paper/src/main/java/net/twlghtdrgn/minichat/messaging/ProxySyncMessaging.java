@@ -15,45 +15,31 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.TimeUnit;
 
 public class ProxySyncMessaging implements PluginMessageListener {
-    public static final String PROXY_SYNC_CHANNEL = "minichat:sync";
-
-    public static void sendMessage(@NotNull Player p, @NotNull SyncID v) {
+    public static void sendMessage(@NotNull Player p, @NotNull String syncType) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF(v.getName());
+        out.writeUTF(syncType);
 
-        if (v == SyncID.SPY) {
+        if (syncType.equals(SyncType.SPY)) {
             out.writeBoolean(PlayerCache.isLocalSpy(p.getUniqueId()));
-        } else if (v == SyncID.SETTINGS) {
+        } else if (syncType.equals(SyncType.SETTINGS)) {
             out.writeBoolean(Configuration.getConfig().getGlobalChat().isEnabled());
             out.writeUTF(Configuration.getConfig().getGlobalChat().getPrefix());
             out.writeBoolean(Configuration.getConfig().getDisable().isProxyChatLoggingDisabled());
         } else return;
 
-        p.sendPluginMessage(MiniChat.getPlugin(), PROXY_SYNC_CHANNEL, out.toByteArray());
+        p.sendPluginMessage(MiniChat.getPlugin(), MessageChannel.PROXY, out.toByteArray());
     }
 
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] bytes) {
-        if (!channel.equals(PROXY_SYNC_CHANNEL)) return;
+        if (!channel.equals(MessageChannel.PROXY)) return;
         ByteArrayDataInput out = ByteStreams.newDataInput(bytes);
         String sub = out.readUTF();
-        if (sub.equals(SyncID.SPY.getName())) {
+        if (sub.equals(SyncType.SPY)) {
             if (out.readBoolean() != PlayerCache.isLocalSpy(player.getUniqueId())) PlayerCache.setLocalSpy(player.getUniqueId());
-        } else if (sub.equals(SyncID.RESYNC.getName())) {
+        } else if (sub.equals(SyncType.RESYNC)) {
             Bukkit.getAsyncScheduler().runDelayed(MiniChat.getPlugin(), task ->
-                    sendMessage(player, SyncID.SETTINGS), 2, TimeUnit.SECONDS);
-        }
-    }
-
-    public enum SyncID {
-        SETTINGS("settings"),
-        RESYNC("resync"),
-        SPY("spy");
-
-        @Getter
-        private final String name;
-        SyncID(String name) {
-            this.name = name;
+                    sendMessage(player, SyncType.SETTINGS), 2, TimeUnit.SECONDS);
         }
     }
 }

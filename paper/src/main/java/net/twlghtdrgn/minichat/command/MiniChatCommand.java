@@ -4,6 +4,7 @@ import net.twlghtdrgn.minichat.MiniChat;
 import net.twlghtdrgn.minichat.PlayerCache;
 import net.twlghtdrgn.minichat.config.Configuration;
 import net.twlghtdrgn.minichat.messaging.ProxySyncMessaging;
+import net.twlghtdrgn.minichat.messaging.SyncType;
 import net.twlghtdrgn.twilightlib.api.util.Format;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -30,14 +31,14 @@ public class MiniChatCommand extends Command {
             if (MiniChat.getPlugin().getConfigLoader().reload()) {
                 sender.sendMessage(Format.parse("<green>Config reloaded"));
                 if (sender instanceof Player p) {
-                    ProxySyncMessaging.sendMessage(p, ProxySyncMessaging.SyncID.SETTINGS);
+                    ProxySyncMessaging.sendMessage(p, SyncType.SETTINGS);
                     return true;
                 } else {
                     if (Bukkit.getOnlinePlayers().isEmpty()) {
                         sender.sendMessage("Some functions (like proxy synchronization) requires at least one player online on the server");
                         return false;
                     } else {
-                        ProxySyncMessaging.sendMessage(Bukkit.getOnlinePlayers().stream().findFirst().get(), ProxySyncMessaging.SyncID.SETTINGS);
+                        ProxySyncMessaging.sendMessage(Bukkit.getOnlinePlayers().stream().findFirst().get(), SyncType.SETTINGS);
                         return true;
                     }
                 }
@@ -52,7 +53,7 @@ public class MiniChatCommand extends Command {
                 } else {
                     sender.sendMessage(Format.parse(Configuration.getConfig().getMessages().getSpyDisabled()));
                 }
-                ProxySyncMessaging.sendMessage(p, ProxySyncMessaging.SyncID.SPY);
+                ProxySyncMessaging.sendMessage(p, SyncType.SPY);
             } else sender.sendMessage(Format.parse("Uh-oh! Console always spies, ya know?"));
         }
         return false;

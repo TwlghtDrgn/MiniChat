@@ -11,6 +11,7 @@ import net.twlghtdrgn.minichat.event.NetworkMessageEvent;
 import net.twlghtdrgn.twilightlib.api.util.Format;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class SpyMessage {
@@ -39,8 +40,8 @@ public class SpyMessage {
             if (cachedServer.isIgnore()) return;
             if (message.startsWith(cachedServer.getGlobalChatPrefix())) {
                 message = message.replaceFirst(cachedServer.getGlobalChatPrefix(), "");
-                channelType = Language.getConfig().getSpy().getGlobalChatSymbol();
-            } else channelType = Language.getConfig().getSpy().getLocalChatSymbol();
+                channelType = Configuration.getConfig().getSpy().getGlobalChatSymbol();
+            } else channelType = Configuration.getConfig().getSpy().getLocalChatSymbol();
         }
 
         final Component spyMessage = Format.parse(getMessage()
@@ -50,9 +51,11 @@ public class SpyMessage {
                 .replace("%server%", value)
                 .replace("%channel_type%", channelType));
 
-        spies.stream().filter(player -> (player.getCurrentServer().isPresent()
-                        && !player.getCurrentServer().get().getServerInfo().getName().equals(value))
-                        || !player.getUsername().equals(sender))
+        spies.stream()
+                .filter(player -> player.getCurrentServer().isPresent())
+                .filter(player -> (!isNetwork && Arrays.stream(value.split(",")).noneMatch(s -> s.equalsIgnoreCase(player.getUsername())))
+                        || !player.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(value))
+                .filter(player -> !player.getUsername().equalsIgnoreCase(sender))
                 .forEach(player -> player.sendMessage(spyMessage));
 
         String consoleSpyMessage = getConsoleMessage()
@@ -60,7 +63,8 @@ public class SpyMessage {
                 .replace("%recipients%", value)
                 .replace("%message%", message)
                 .replace("%server%", value)
-                .replace("%channel_type%", channelType);
+                .replace("%channel_type%", channelType.equals(Configuration.getConfig().getSpy().getLocalChatSymbol())
+                        ? Language.getConfig().getSpy().getLocalChatSymbol() : Language.getConfig().getSpy().getGlobalChatSymbol());
 
         if (isNetwork) {
             MiniChat.getPlugin().getServer().getEventManager().fire(new NetworkMessageEvent(sender, message, value, channelType));

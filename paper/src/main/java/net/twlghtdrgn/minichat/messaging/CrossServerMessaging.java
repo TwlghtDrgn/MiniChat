@@ -12,21 +12,19 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
 public class CrossServerMessaging implements PluginMessageListener {
-    public static final String PROXY_CHANNEL = "minichat:cross-server";
-
     public static void sendMessage(@NotNull Player p, String message) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Forward");
         out.writeUTF("ALL");
         out.writeUTF(Configuration.getConfig().getCrossServer().getServerId());
         out.writeUTF(message);
-        p.sendPluginMessage(MiniChat.getPlugin(), PROXY_CHANNEL, out.toByteArray());
+        p.sendPluginMessage(MiniChat.getPlugin(), MessageChannel.SERVER, out.toByteArray());
     }
 
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] message) {
         if (!Configuration.getConfig().getCrossServer().isCrossServerEnabled()) return;
-        if (!channel.equals(PROXY_CHANNEL)) return;
+        if (!channel.equals(MessageChannel.SERVER)) return;
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         if (!in.readUTF().equals(Configuration.getConfig().getCrossServer().getServerId())) return;
         String msg = in.readUTF();

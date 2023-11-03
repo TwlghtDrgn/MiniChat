@@ -19,7 +19,7 @@ import net.twlghtdrgn.minichat.messaging.ProxyMessaging;
 import net.twlghtdrgn.minichat.sql.Database;
 import net.twlghtdrgn.twilightlib.api.ILibrary;
 import net.twlghtdrgn.twilightlib.api.config.ConfigLoader;
-import net.twlghtdrgn.twilightlib.api.util.PluginInfo;
+import net.twlghtdrgn.twilightlib.api.util.PluginInfoProvider;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class MiniChat implements ILibrary {
     private final ProxyServer server;
     private final ConfigLoader configLoader;
     private final Path path;
-    private final PluginInfo pluginInfo;
+    private final PluginInfoProvider pluginInfo;
     private boolean vanishBridgeInstalled = false;
 
     private static void setPlugin(MiniChat p) {
@@ -59,7 +59,7 @@ public class MiniChat implements ILibrary {
         this.path = dataDirectory;
         setPlugin(this);
         configLoader = new ConfigLoader(this);
-        pluginInfo = new PluginInfo(net.twlghtdrgn.minichat.PluginInfo.NAME,
+        pluginInfo = new PluginInfoProvider(net.twlghtdrgn.minichat.PluginInfo.NAME,
                 net.twlghtdrgn.minichat.PluginInfo.VERSION,
                 server.getVersion().getName() + " " + server.getVersion().getVersion(),
                 net.twlghtdrgn.minichat.PluginInfo.URL);
@@ -111,5 +111,15 @@ public class MiniChat implements ILibrary {
                 .plugin(this)
                 .build();
         manager.register(meta, command);
+    }
+
+    @Override
+    public Logger log() {
+        return logger;
+    }
+
+    @Override
+    public boolean reload() {
+        return false;
     }
 }

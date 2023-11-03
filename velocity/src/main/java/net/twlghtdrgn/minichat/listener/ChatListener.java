@@ -19,6 +19,7 @@ import java.util.UUID;
 public class ChatListener {
     @Subscribe
     public void onPlayerChatEvent(@NotNull PlayerChatEvent e) {
+        if (!e.getResult().isAllowed()) return;
         String message = e.getMessage();
         Player player = e.getPlayer();
 
