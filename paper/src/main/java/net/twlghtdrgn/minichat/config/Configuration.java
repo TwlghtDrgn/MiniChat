@@ -26,7 +26,7 @@ public class Configuration extends AbstractConfig {
         private String placeholder = "%luckperms_prefix% {playername} %luckperms_suffix% <gray>►►<reset>";
         private GlobalChat globalChat = new GlobalChat();
         private LocalChat localChat = new LocalChat();
-        private Disable disable = new Disable();
+        private Enable enable = new Enable();
         private CrossServer crossServer = new CrossServer();
         private Messages messages = new Messages();
 
@@ -47,13 +47,13 @@ public class Configuration extends AbstractConfig {
 
         @Data
         @ConfigSerializable
-        public static class Disable {
+        public static class Enable {
             @Setting("join-message")
-            private boolean joinMessageDisabled = false;
+            private boolean joinMessageEnabled = true;
             @Setting("leave-message")
-            private boolean leaveMessageDisabled = false;
+            private boolean leaveMessageEnabled = true;
             @Setting("proxy-chat-logging")
-            private boolean proxyChatLoggingDisabled = false;
+            private boolean proxyChatLoggingEnabled = false;
         }
 
         @Data

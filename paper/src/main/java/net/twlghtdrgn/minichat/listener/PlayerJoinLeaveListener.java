@@ -9,11 +9,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class PlayerJoinLeaveListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        if (Configuration.getConfig().getDisable().isJoinMessageDisabled()) e.joinMessage(null);
+        if (Configuration.getConfig().getEnable().isJoinMessageEnabled()) e.joinMessage(null);
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e) {
-        if (Configuration.getConfig().getDisable().isLeaveMessageDisabled()) e.quitMessage(null);
+        if (Configuration.getConfig().getEnable().isLeaveMessageEnabled()) e.quitMessage(null);
     }
 }

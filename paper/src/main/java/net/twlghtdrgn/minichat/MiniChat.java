@@ -8,19 +8,22 @@ import net.twlghtdrgn.minichat.listener.PlayerJoinLeaveListener;
 import net.twlghtdrgn.minichat.messaging.CrossServerMessaging;
 import net.twlghtdrgn.minichat.messaging.MessageChannel;
 import net.twlghtdrgn.minichat.messaging.ProxySyncMessaging;
+import net.twlghtdrgn.minichat.messaging.RedisMessaging;
 import net.twlghtdrgn.twilightlib.TwilightPlugin;
 import org.bukkit.Bukkit;
 
 public final class MiniChat extends TwilightPlugin {
     @Getter
     private static MiniChat plugin;
-
+    private RedisMessaging redisMessaging;
     @Override
     protected void enable() throws Exception {
         plugin = this;
         getConfigLoader().addConfig(new Configuration("config.yml"));
 
         if (!getConfigLoader().reload()) throw new IllegalStateException("Config cannot be loaded");
+
+        redisMessaging = new RedisMessaging();
 
         getServer().getMessenger().registerIncomingPluginChannel(this, MessageChannel.SERVER,
                 new CrossServerMessaging());
@@ -36,6 +39,8 @@ public final class MiniChat extends TwilightPlugin {
 
     @Override
     protected void disable() {
+        redisMessaging.unsubscribe();
+
         getServer().getMessenger().unregisterOutgoingPluginChannel(this, MessageChannel.SERVER);
         getServer().getMessenger().unregisterOutgoingPluginChannel(this, MessageChannel.PROXY);
         getServer().getMessenger().unregisterIncomingPluginChannel(this, MessageChannel.SERVER);
