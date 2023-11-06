@@ -4,8 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class PlayerCache {
     private PlayerCache() {}
@@ -25,8 +26,10 @@ public class PlayerCache {
         return localSpies.contains(uuid);
     }
 
-    public static List<Player> getLocalSpies() {
-        return localSpies.stream().filter(uuid -> Bukkit.getOfflinePlayer(uuid).isOnline())
-                .map(Bukkit::getPlayer).toList();
+    public static Set<Player> getLocalSpies() {
+        return localSpies.stream()
+                .filter(uuid -> Bukkit.getOfflinePlayer(uuid).isOnline())
+                .map(Bukkit::getPlayer)
+                .collect(Collectors.toSet());
     }
 }

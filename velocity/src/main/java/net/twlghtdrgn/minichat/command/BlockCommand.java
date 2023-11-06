@@ -2,8 +2,8 @@ package net.twlghtdrgn.minichat.command;
 
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
+import net.twlghtdrgn.minichat.ChatPermission;
 import net.twlghtdrgn.minichat.MiniChat;
-import net.twlghtdrgn.minichat.config.Language;
 import net.twlghtdrgn.minichat.sql.Database;
 import net.twlghtdrgn.twilightlib.api.util.Format;
 import net.twlghtdrgn.vanishbridge.VanishBridge;
@@ -76,40 +76,40 @@ public class BlockCommand implements SimpleCommand {
 
     @Override
     public boolean hasPermission(@NotNull Invocation invocation) {
-        return invocation.source().hasPermission("minichat.command.block");
+        return invocation.source().hasPermission(ChatPermission.COMMAND_BLOCK);
     }
 
     private void block(@NotNull Invocation invocation) {
         if (invocation.arguments().length < 1) {
             invocation.source().sendMessage(Format.parse(
-                    Language.getConfig().getNotEnoughArgs()
+                    MiniChat.getPlugin().getLang().get().getNotEnoughArgs()
                             .replace("%usage%","/block <nickname>")));
             return;
         }
         Player p = (Player) invocation.source();
         if (p.getUsername().equals(invocation.arguments()[0])) {
-            p.sendMessage(Format.parse(Language.getConfig().getDirectMessage().getSelfBlockedError()));
+            p.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getDirectMessage().getSelfBlockedError()));
             return;
         }
         if (!Database.isBlocked(p.getUniqueId(), invocation.arguments()[0])) {
             Database.addBlockedPlayer(p.getUniqueId(), invocation.arguments()[0]);
-            p.sendMessage(Format.parse(Language.getConfig().getDirectMessage().getBlock()
+            p.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getDirectMessage().getBlock()
                     .replace("%player%", invocation.arguments()[0])));
-        } else p.sendMessage(Format.parse(Language.getConfig().getDirectMessage().getAlreadyBlocked()));
+        } else p.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getDirectMessage().getAlreadyBlocked()));
     }
 
     private void unblock(@NotNull Invocation invocation) {
         if (invocation.arguments().length < 1) {
             invocation.source().sendMessage(Format.parse(
-                    Language.getConfig().getNotEnoughArgs()
+                    MiniChat.getPlugin().getLang().get().getNotEnoughArgs()
                             .replace("%usage%","/unblock <nickname>")));
             return;
         }
         Player p = (Player) invocation.source();
         if (Database.isBlocked(p.getUniqueId(), invocation.arguments()[0])) {
             Database.removeBlockedPlayer(p.getUniqueId(), invocation.arguments()[0]);
-            p.sendMessage(Format.parse(Language.getConfig().getDirectMessage().getUnblock()
+            p.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getDirectMessage().getUnblock()
                     .replace("%player%", invocation.arguments()[0])));
-        } else p.sendMessage(Format.parse(Language.getConfig().getDirectMessage().getNotBlocked()));
+        } else p.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getDirectMessage().getNotBlocked()));
     }
 }

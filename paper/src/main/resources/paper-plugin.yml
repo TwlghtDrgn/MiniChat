@@ -1,21 +1,21 @@
 name: MiniChat
 version: '${project.version}'
 main: net.twlghtdrgn.minichat.MiniChat
-api-version: 1.19
+api-version: '1.20'
 website: https://github.com/TwlghtDrgn/MiniChat
-prefix: MC
-load-after:
-  - name: TwiilightLib
-  - name: SuperVanish
-  - name: PremiumVanish
-dependencies:
-  - name: TwilightLib
-    required: true
-  - name: PlaceholderAPI
-    required: true
-  - name: SuperVanish
-    required: false
-  - name: PremiumVanish
-    required: false
 authors: [TwlghtDrgn]
-description: A very simple chat with global cross-server function for Paper that uses MiniMessage formatting
+description: A very simple chat formatting plugin for Paper
+dependencies:
+    server:
+        TwilightLib:
+            load: BEFORE
+            required: true
+        PlaceholderAPI:
+            load: BEFORE
+            required: false
+        SuperVanish:
+            load: BEFORE
+            required: false
+        PremiumVanish:
+            load: BEFORE
+            required: false

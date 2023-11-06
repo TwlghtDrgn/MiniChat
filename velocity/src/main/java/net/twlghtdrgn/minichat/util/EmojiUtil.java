@@ -1,14 +1,15 @@
 package net.twlghtdrgn.minichat.util;
 
-import net.twlghtdrgn.minichat.config.Configuration;
+import net.twlghtdrgn.minichat.MiniChat;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class EmojiUtil {
     private EmojiUtil() {}
     public static String replaceEmojis(String message) {
-        Map<String, String> emojis = Configuration.getConfig().getEmojis().getEmojis();
+        final Map<String, String> emojis = MiniChat.getPlugin().getConf().get().getEmojis().getEmojis();
         for (Map.Entry<String,String> emoji:emojis.entrySet()) {
             message = message.replace(emoji.getKey(), emoji.getValue());
         }
@@ -16,11 +17,9 @@ public class EmojiUtil {
     }
 
     public static @NotNull List<String> getSortedEmojis(String content) {
-        Set<String> emojis = Configuration.getConfig().getEmojis().getEmojis().keySet();
-        final List<String> sortedEmojis = new ArrayList<>();
-        for (String emoji:emojis)
-            if (emoji.startsWith(content)) sortedEmojis.add(emoji);
-        Collections.sort(sortedEmojis);
-        return sortedEmojis;
+        return MiniChat.getPlugin().getConf().get().getEmojis().getEmojis().keySet().stream()
+                .filter(s -> s.startsWith(content))
+                .sorted()
+                .toList();
     }
 }

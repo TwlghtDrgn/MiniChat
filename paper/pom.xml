@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.twlghtdrgn</groupId>
         <artifactId>MiniChat</artifactId>
-        <version>0.3.9</version>
+        <version>0.4.0</version>
     </parent>
 
     <artifactId>MiniChat-Paper</artifactId>
@@ -44,9 +44,12 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputDirectory>${project.parent.basedir}/target</outputDirectory>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>all</shadedClassifierName>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>META-INF/**</excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
@@ -62,16 +65,16 @@
 
     <repositories>
         <repository>
+            <id>twlghtdrgn-public</id>
+            <url>https://maven.twlghtdrgn.net/repository/public/</url>
+        </repository>
+        <repository>
             <id>papermc-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>twlghtdrgn-public</id>
-            <url>https://maven.twlghtdrgn.net/repository/public/</url>
         </repository>
         <repository>
             <id>placeholderapi</id>
@@ -87,7 +90,7 @@
         <dependency>
             <groupId>net.twlghtdrgn</groupId>
             <artifactId>TwilightLib-Paper</artifactId>
-            <version>0.2.2</version>
+            <version>0.21.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -99,7 +102,7 @@
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
-            <version>2.11.3</version>
+            <version>2.11.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

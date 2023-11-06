@@ -3,10 +3,9 @@ package net.twlghtdrgn.minichat.message;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
+import net.twlghtdrgn.minichat.ChatPermission;
 import net.twlghtdrgn.minichat.MiniChat;
 import net.twlghtdrgn.minichat.PlayerCache;
-import net.twlghtdrgn.minichat.config.Configuration;
-import net.twlghtdrgn.minichat.config.Language;
 import net.twlghtdrgn.minichat.event.PrivateMessageEvent;
 import net.twlghtdrgn.minichat.sql.Database;
 import net.twlghtdrgn.minichat.util.EmojiUtil;
@@ -34,20 +33,20 @@ public class PrivateMessage {
     }
 
     public void send() {
-        if (recipients.size() > Configuration.getConfig().getMaxRecipients()) {
-            sender.sendMessage(Format.parse(Language.getConfig().getDirectMessage().getRecipientLimit()
+        if (recipients.size() > MiniChat.getPlugin().getConf().get().getMaxRecipients()) {
+            sender.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getDirectMessage().getRecipientLimit()
                     .replace("%current%", String.valueOf(recipients.size()))
-                    .replace("%max%", String.valueOf(Configuration.getConfig().getMaxRecipients()))));
+                    .replace("%max%", String.valueOf(MiniChat.getPlugin().getConf().get().getMaxRecipients()))));
             return;
         }
 
         final Set<Player> players = getPlayers();
 
         if (players.isEmpty()) {
-            String errorMessage = Language.getConfig().getDirectMessage().getPlayerOffline();
+            String errorMessage = MiniChat.getPlugin().getLang().get().getDirectMessage().getPlayerOffline();
             errorMessage = unknownPlayer != null
                     ? errorMessage.replace("%player%", unknownPlayer.getUsername())
-                    : Language.getConfig().getDirectMessage().getPlayerNotFound();
+                    : MiniChat.getPlugin().getLang().get().getDirectMessage().getPlayerNotFound();
 
             sender.sendMessage(Format.parse(errorMessage));
             return;
@@ -57,12 +56,12 @@ public class PrivateMessage {
             String nick = p.getUsername();
             UUID uuid = p.getUniqueId();
             if (Database.isBlocked(sender.getUniqueId(), nick)) {
-                sender.sendMessage(Format.parse(Language.getConfig().getDirectMessage().getBlockedError()
+                sender.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getDirectMessage().getBlockedError()
                         .replace("%player%",nick)));
                 return;
             }
             if (Database.isBlocked(uuid, sender.getUsername())) {
-                sender.sendMessage(Format.parse(Language.getConfig().getDirectMessage().getBlocked()
+                sender.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getDirectMessage().getBlocked()
                         .replace("%player%", nick)));
                 return;
             }
@@ -72,23 +71,23 @@ public class PrivateMessage {
                 .map(Player::getUsername)
                 .collect(Collectors.joining(", "));
 
-        if (Configuration.getConfig().getEmojis().isEmojiReplacerEnabled())
+        if (MiniChat.getPlugin().getConf().get().getEmojis().isEmojiReplacerEnabled())
             message = EmojiUtil.replaceEmojis(message);
 
-        Component formattedReceiverMessage = Format.parse(Language.getConfig().getDirectMessage().getReceiverFormat()
+        Component formattedReceiverMessage = Format.parse(MiniChat.getPlugin().getLang().get().getDirectMessage().getReceiverFormat()
                 .replace("%sender%", sender.getUsername())
                 .replace("%recipients%", players.size() > 1 ? recipientNicknames : "You")
                 .replace("%message%", message));
 
         Component formattedHoverableReceiverMessage = Format.parse(
-                "<hover:show_text:'" + Language.getConfig().getClickToReply() + "'>"
+                "<hover:show_text:'" + MiniChat.getPlugin().getLang().get().getClickToReply() + "'>"
                         + "<click:suggest_command:/r >"
-                            + Language.getConfig().getDirectMessage().getReceiverFormat()
+                            + MiniChat.getPlugin().getLang().get().getDirectMessage().getReceiverFormat()
                                 .replace("%sender%", sender.getUsername())
                                 .replace("%recipients%", players.size() > 1 ? recipientNicknames : "You")
                                 .replace("%message%", message));
 
-        Component formattedSenderMessage = Format.parse(Language.getConfig().getDirectMessage().getSenderFormat()
+        Component formattedSenderMessage = Format.parse(MiniChat.getPlugin().getLang().get().getDirectMessage().getSenderFormat()
                 .replace("%recipients%", recipientNicknames)
                 .replace("%message%", message));
 
@@ -112,7 +111,7 @@ public class PrivateMessage {
             new SpyMessage(false,
                     message,
                     sender.getUsername(),
-                    recipientNicknames).send();
+                    players.stream().map(Player::getUsername).toList()).send();
         });
     }
 
@@ -129,7 +128,7 @@ public class PrivateMessage {
             }
             if (MiniChat.getPlugin().isVanishBridgeInstalled()
                     && checkVanished(player)
-                    && (!sender.hasPermission("minichat.vanished"))) {
+                    && (!sender.hasPermission(ChatPermission.VANISHED))) {
                 unknownPlayer = player;
                 continue;
             }

@@ -4,8 +4,8 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
+import net.twlghtdrgn.minichat.MiniChat;
 import net.twlghtdrgn.minichat.PlayerCache;
-import net.twlghtdrgn.minichat.config.Language;
 import net.twlghtdrgn.minichat.message.PrivateMessage;
 import net.twlghtdrgn.minichat.message.SpyMessage;
 import net.twlghtdrgn.minichat.message.StaffMessage;
@@ -35,7 +35,7 @@ public class ChatListener {
 
             Optional<Set<UUID>> lastRecipients = PlayerCache.getLastRecipients(player.getUniqueId());
             if (lastRecipients.isEmpty()) {
-                player.sendMessage(Format.parse(Language.getConfig().getDirectMessage().getPlayerNotFound()));
+                player.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getDirectMessage().getPlayerNotFound()));
                 return;
             }
 
