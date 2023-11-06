@@ -12,11 +12,11 @@ Features:
 Requirements:
 - MiniChat-Paper:
   - Paper 1.20+ or any Paper fork
+  - [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI/) (optional)
+  - SuperVanish / PremiumVanish (optional, but if you use any of them, then you can't send message accidentally when vanished)
 - MiniChat-Velocity:
   - Velocity 3.2.0+
 - [TwilightLib](https://github.com/TwlghtDrgn/TwilightLib)
-- [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI/)
-- SuperVanish / PremiumVanish (optional, but if you use any of them, then you can't send message accidentally when vanished)
 
 Plugin permissions list:
 <table>
