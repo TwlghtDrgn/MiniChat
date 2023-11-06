@@ -4,9 +4,8 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import net.kyori.adventure.text.Component;
+import net.twlghtdrgn.minichat.ChatPermission;
 import net.twlghtdrgn.minichat.MiniChat;
-import net.twlghtdrgn.minichat.config.Configuration;
-import net.twlghtdrgn.minichat.config.Language;
 import net.twlghtdrgn.minichat.util.EmojiUtil;
 import net.twlghtdrgn.twilightlib.api.util.Format;
 
@@ -22,19 +21,19 @@ public class StaffMessage {
     }
 
     public void send() {
-        if (Configuration.getConfig().getEmojis().isEmojiReplacerEnabled())
+        if (MiniChat.getPlugin().getConf().get().getEmojis().isEmojiReplacerEnabled())
             message = EmojiUtil.replaceEmojis(message);
 
         Optional<ServerConnection> srv = sender.getCurrentServer();
         String serverName = srv.isPresent() ? srv.get().getServerInfo().getName() : "n/a";
 
-        Component staffMessage = Format.parse(Language.getConfig().getStaffChatFormat()
+        Component staffMessage = Format.parse(MiniChat.getPlugin().getLang().get().getStaffChatFormat()
                 .replace("%server%", serverName)
                 .replace("%sender%", sender.getUsername())
                 .replace("%message%", message));
 
         server.getAllPlayers().stream()
-                .filter(player -> player.hasPermission("minichat.command.staff"))
+                .filter(player -> player.hasPermission(ChatPermission.COMMAND_STAFF))
                 .forEach(player -> player.sendMessage(staffMessage));
     }
 }

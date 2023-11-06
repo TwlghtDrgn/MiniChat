@@ -2,9 +2,9 @@ package net.twlghtdrgn.minichat.command;
 
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
+import net.twlghtdrgn.minichat.ChatPermission;
+import net.twlghtdrgn.minichat.MiniChat;
 import net.twlghtdrgn.minichat.PlayerCache;
-import net.twlghtdrgn.minichat.config.Configuration;
-import net.twlghtdrgn.minichat.config.Language;
 import net.twlghtdrgn.minichat.message.StaffMessage;
 import net.twlghtdrgn.minichat.util.EmojiUtil;
 import net.twlghtdrgn.twilightlib.api.util.Format;
@@ -22,9 +22,9 @@ public class StaffChatCommand implements SimpleCommand {
 
         if (args.length < 1) {
             if (PlayerCache.toggleStaffChat(p.getUniqueId())) {
-                p.sendMessage(Format.parse(Language.getConfig().getStaffChatModeToggleOn()));
+                p.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getStaffChatModeToggleOn()));
             } else {
-                p.sendMessage(Format.parse(Language.getConfig().getStaffChatModeToggleOff()));
+                p.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getStaffChatModeToggleOff()));
             }
             return;
         }
@@ -39,7 +39,7 @@ public class StaffChatCommand implements SimpleCommand {
     public CompletableFuture<List<String>> suggestAsync(@NotNull Invocation invocation) {
         String[] args = invocation.arguments();
         if (args.length < 1) return CompletableFuture.completedFuture(List.of());
-        if (Configuration.getConfig().getEmojis().isEmojiReplacerEnabled()) {
+        if (MiniChat.getPlugin().getConf().get().getEmojis().isEmojiReplacerEnabled()) {
             String arg = args[args.length - 1];
             if (arg.startsWith(":"))
                 return CompletableFuture.completedFuture(EmojiUtil.getSortedEmojis(arg));
@@ -49,6 +49,6 @@ public class StaffChatCommand implements SimpleCommand {
 
     @Override
     public boolean hasPermission(@NotNull Invocation invocation) {
-        return invocation.source().hasPermission("minichat.command.staff");
+        return invocation.source().hasPermission(ChatPermission.COMMAND_STAFF);
     }
 }

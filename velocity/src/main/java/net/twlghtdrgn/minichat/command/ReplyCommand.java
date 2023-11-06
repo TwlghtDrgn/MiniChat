@@ -3,9 +3,9 @@ package net.twlghtdrgn.minichat.command;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
+import net.twlghtdrgn.minichat.ChatPermission;
+import net.twlghtdrgn.minichat.MiniChat;
 import net.twlghtdrgn.minichat.PlayerCache;
-import net.twlghtdrgn.minichat.config.Configuration;
-import net.twlghtdrgn.minichat.config.Language;
 import net.twlghtdrgn.minichat.message.PrivateMessage;
 import net.twlghtdrgn.minichat.util.EmojiUtil;
 import net.twlghtdrgn.twilightlib.api.util.Format;
@@ -24,23 +24,23 @@ public class ReplyCommand implements SimpleCommand {
 
         if (invocation.alias().equals("chat")) {
             if (PlayerCache.toggleChatMode(p.getUniqueId())) {
-                p.sendMessage(Format.parse(Language.getConfig().getChatModeToggleOn()));
+                p.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getChatModeToggleOn()));
             } else {
-                p.sendMessage(Format.parse(Language.getConfig().getChatModeToggleOff()));
+                p.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getChatModeToggleOff()));
             }
             return;
         }
 
         String[] args = invocation.arguments();
         if (args.length < 1) {
-            p.sendMessage(Format.parse(Language.getConfig().getNotEnoughArgs()
+            p.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getNotEnoughArgs()
                     .replace("%usage%","/r <Message>")));
             return;
         }
 
         Optional<Set<UUID>> lastRecipients = PlayerCache.getLastRecipients(p.getUniqueId());
         if (lastRecipients.isEmpty()) {
-            p.sendMessage(Format.parse(Language.getConfig().getDirectMessage().getPlayerNotFound()));
+            p.sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getDirectMessage().getPlayerNotFound()));
             return;
         }
 
@@ -55,7 +55,7 @@ public class ReplyCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (args.length < 1) return CompletableFuture.completedFuture(List.of());
-        if (Configuration.getConfig().getEmojis().isEmojiReplacerEnabled()) {
+        if (MiniChat.getPlugin().getConf().get().getEmojis().isEmojiReplacerEnabled()) {
             String arg = args[args.length - 1];
             if (arg.startsWith(":"))
                 return CompletableFuture.completedFuture(EmojiUtil.getSortedEmojis(arg));
@@ -65,6 +65,6 @@ public class ReplyCommand implements SimpleCommand {
 
     @Override
     public boolean hasPermission(@NotNull Invocation invocation) {
-        return invocation.source().hasPermission("minichat.command.reply");
+        return invocation.source().hasPermission(ChatPermission.COMMAND_REPLY);
     }
 }

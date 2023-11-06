@@ -2,9 +2,8 @@ package net.twlghtdrgn.minichat.command;
 
 import com.velocitypowered.api.command.SimpleCommand;
 import net.kyori.adventure.text.Component;
+import net.twlghtdrgn.minichat.ChatPermission;
 import net.twlghtdrgn.minichat.MiniChat;
-import net.twlghtdrgn.minichat.config.Configuration;
-import net.twlghtdrgn.minichat.config.Language;
 import net.twlghtdrgn.minichat.util.EmojiUtil;
 import net.twlghtdrgn.twilightlib.api.util.Format;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +17,7 @@ public class AlertCommand implements SimpleCommand {
     public void execute(@NotNull Invocation invocation) {
         String[] args = invocation.arguments();
         if (args.length < 1) {
-            invocation.source().sendMessage(Format.parse(Language.getConfig().getNotEnoughArgs()
+            invocation.source().sendMessage(Format.parse(MiniChat.getPlugin().getLang().get().getNotEnoughArgs()
                     .replace("%usage%","/alert <message>")));
             return;
         }
@@ -26,11 +25,11 @@ public class AlertCommand implements SimpleCommand {
         StringJoiner sj = new StringJoiner(" ");
         for (String arg:args) sj.add(arg);
 
-        String msg = Configuration.getConfig().getEmojis().isEmojiReplacerEnabled()
+        String msg = MiniChat.getPlugin().getConf().get().getEmojis().isEmojiReplacerEnabled()
                 ? EmojiUtil.replaceEmojis(sj.toString())
                 : sj.toString();
 
-        Component broadcastMessage = Format.parse(Language.getConfig().getAlert().replace("%message%", msg));
+        Component broadcastMessage = Format.parse(MiniChat.getPlugin().getLang().get().getAlert().replace("%message%", msg));
         MiniChat.getPlugin().getServer().sendMessage(broadcastMessage);
     }
 
@@ -38,7 +37,7 @@ public class AlertCommand implements SimpleCommand {
     public CompletableFuture<List<String>> suggestAsync(@NotNull Invocation invocation) {
         String[] args = invocation.arguments();
         if (args.length < 1) return CompletableFuture.completedFuture(List.of());
-        if (Configuration.getConfig().getEmojis().isEmojiReplacerEnabled()) {
+        if (MiniChat.getPlugin().getConf().get().getEmojis().isEmojiReplacerEnabled()) {
             String arg = args[args.length - 1];
             if (arg.startsWith(":"))
                 return CompletableFuture.completedFuture(EmojiUtil.getSortedEmojis(arg));
@@ -48,6 +47,6 @@ public class AlertCommand implements SimpleCommand {
 
     @Override
     public boolean hasPermission(@NotNull Invocation invocation) {
-        return invocation.source().hasPermission("minichat.command.alert");
+        return invocation.source().hasPermission(ChatPermission.COMMAND_ALERT);
     }
 }
