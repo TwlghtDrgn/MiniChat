@@ -3,7 +3,8 @@ package net.twlghtdrgn.minichat.util;
 import net.twlghtdrgn.minichat.MiniChat;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class EmojiUtil {
     private EmojiUtil() {}

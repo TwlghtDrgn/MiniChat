@@ -10,9 +10,7 @@ import net.twlghtdrgn.twilightlib.api.util.Format;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SpyMessage {
     private final boolean isNetwork;

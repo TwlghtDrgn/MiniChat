@@ -11,7 +11,6 @@ import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import net.twlghtdrgn.minichat.MiniChat;
 import net.twlghtdrgn.minichat.PlayerCache;
-import net.twlghtdrgn.minichat.ServerCache;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
