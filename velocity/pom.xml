@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.twlghtdrgn</groupId>
         <artifactId>MiniChat</artifactId>
-        <version>0.3.9</version>
+        <version>0.4.0</version>
     </parent>
 
     <artifactId>MiniChat-Velocity</artifactId>
@@ -69,9 +69,12 @@
                                     <excludes>META-INF/**</excludes>
                                 </filter>
                             </filters>
-                            <outputDirectory>${project.parent.basedir}/target</outputDirectory>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>all</shadedClassifierName>
+                            <relocations>
+                                <relocation>
+                                    <pattern>redis.clients.jedis</pattern>
+                                    <shadedPattern>net.twlghtdrgn.twilightlib.libraries.jedis</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
@@ -117,12 +120,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.spongepowered</groupId>
-            <artifactId>configurate-yaml</artifactId>
-            <version>4.2.0-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

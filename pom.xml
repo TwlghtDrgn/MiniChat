@@ -6,7 +6,7 @@
 
     <groupId>net.twlghtdrgn</groupId>
     <artifactId>MiniChat</artifactId>
-    <version>0.3.9</version>
+    <version>0.4.0</version>
     <packaging>pom</packaging>
 
     <name>MiniChat</name>
@@ -35,6 +35,18 @@
             <version>1.18.26</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>configurate-yaml</artifactId>
+            <version>4.2.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>5.0.2</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <distributionManagement>
@@ -46,5 +58,6 @@
             <id>twlghtdrgn-snapshots</id>
             <url>https://maven.twlghtdrgn.net/repository/snapshots/</url>
         </snapshotRepository>
+
     </distributionManagement>
 </project>
