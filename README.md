@@ -3,11 +3,9 @@ A simple chat-formatting plugin for Paper 1.19+
 
 Features:
 - MiniMessage support
-- Channels:
-  - Global
-  - Global (Cross-server)
-  - Local + Global
-  - Local + Global (Cross-server)
+- Modes:
+  - Vanilla / Vanilla cross-server
+  - Ranged + Global / Ranged + Global cross-server 
 - PlaceholderAPI support
 - A (very) simple setup
 
@@ -97,13 +95,25 @@ Plugin permissions list:
   <tr>
     <td>minichat.vanished</td>
     <td>  </td>
-    <td>Allows sending messages to vanished players. Requires additional plugin</td>
+    <td>Allows sending messages to vanished players. Requires an additional plugin</td>
     <td>Velocity</td>
   </tr>
   <tr>
-    <td>minichat.colors</td>
+    <td>minichat.command.synced</td>
+    <td>/minichat-velocity synced</td>
+    <td>Allows to check if subservers are registered on the proxy</td>
+    <td>Velocity</td>
+  </tr>
+  <tr>
+    <td>minichat.color</td>
     <td>  </td>
-    <td>Allows player to use any MiniMessage formatting (but hyperlinks) in chat</td>
+    <td>Allows to use colors in the chat</td>
+    <td>Paper</td>
+  </tr>
+  <tr>
+    <td>minichat.all-formatting</td>
+    <td></td>
+    <td>Allows to use any MiniMessage formatting in the chat</td>
     <td>Paper</td>
   </tr>
 </table>
